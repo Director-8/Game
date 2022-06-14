@@ -1,0 +1,177 @@
+:root{
+    --board-width: 70vmin;
+    --board-height: 70vmin;
+    --tile-width: 25%;
+    --tile-height: 25%;
+    --board-border: calc(0.03*var(--board-width));
+    --tile-border: calc(0.03*var(--tile-width))
+}
+
+*
+{
+    box-sizing: border-box;
+}
+
+body
+{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+header
+{
+    text-align: center;
+}
+
+hr 
+{
+    width: 500px;
+}
+
+
+#board 
+{
+    width: var(--board-width);
+    height: var(--board-height);
+
+    background-color: #cdc1b5;
+    border: var(--board-border) solid #bbada0;
+
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.tile 
+{
+    width: var(--tile-width);
+    height: var(--tile-height);
+    border: var(--tile-border) solid #bbada0;
+
+    font-size: calc(0.4*var(--tile-width));
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#result_dialog
+{
+    background: none;
+    border: none;
+    color: black;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    text-align: center;
+}
+
+
+#result_dialog h2
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 100pt;
+    margin: 0;
+    margin-top: 300pt;
+}
+
+#result_win
+{
+    font-size: 24pt;
+    font-weight: bold;
+    line-height: 2;
+}
+
+#result_loss
+{
+    font-size: 24pt;
+    font-weight: bold;
+    line-height: 2;
+}
+
+
+footer a
+{
+    color: black;
+    position: fixed;
+    left: 1cm;
+    bottom: 1cm;
+}
+
+footer b
+{
+    color: black;
+    position: fixed;
+    left: 1cm;
+    bottom: 1.5cm;
+}
+
+
+
+/* colored tiles */
+
+.x2 {
+    background-color: #eee4da;
+    color: #727371;
+}
+
+.x4 {
+    background-color: #ece0ca;
+    color: #727371;
+}
+
+.x8 {
+    background-color: #f4b17a;
+    color: white;
+}
+
+.x16{
+    background-color: #f59575;
+    color: white;
+}
+
+.x32{
+    background-color: #f57c5f;
+    color: white;
+}
+
+.x64{
+    background-color: #f65d3b;
+    color: white;
+}
+
+.x128{
+    background-color: #edce71;
+    color: white;
+}
+
+.x256{
+    background-color: #edcc63;
+    color: white;
+}
+
+.x512{
+    background-color: #edc651;
+    color: white;
+}
+
+.x1024{
+    background-color: #eec744;
+    color: white;
+}
+
+.x2048{
+    background-color: #ecc230;
+    color: white;
+}
+
+.x4096 {
+    background-color: #fe3d3d;
+    color: white;
+}
+
+.x8192 {
+    background-color: #ff2020;
+    color: white;
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>common/Game2048.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="Game2048.html">Game2048</a><ul class='methods'><li data-type='method'><a href="Game2048.html#.addZero">addZero</a></li><li data-type='method'><a href="Game2048.html#.combineNum">combineNum</a></li><li data-type='method'><a href="Game2048.html#.createTwo">createTwo</a></li><li data-type='method'><a href="Game2048.html#.empty_board">empty_board</a></li><li data-type='method'><a href="Game2048.html#.filterZero">filterZero</a></li><li data-type='method'><a href="Game2048.html#.hasEmpty">hasEmpty</a></li><li data-type='method'><a href="Game2048.html#.slideLeft">slideLeft</a></li></ul></li><li><a href="Stats4.html">Stats4</a><ul class='methods'><li data-type='method'><a href="Stats4.html#.get_statistics">get_statistics</a></li><li data-type='method'><a href="Stats4.html#.record_game">record_game</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">common/Game2048.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { forEach } from "ramda/es";
+import R from "./ramda.js";
+/**
+ * 2048.js is a module to model and play "2048".
+ * https://en.wikipedia.org/wiki/2048_(video_game)
+ * @namespace Game2048
+ * @author QY.Alexis Yang
+ * @version 2021/22
+ */
+const Game2048 = Object.create(null);
+
+/**
+ * A PlayBoard is an square grid that tiles of different value is placed.
+ * tilles fill up empty positions and can be slide and combined between each other.
+ * It is implemented as an array of rows of tiles.
+ * @memberof Game2048
+ * @typedef {Game2048.Piece-or-Empty[][]} PlayBoard
+ */
+
+/**
+ * A tile is a coloured section of a with value that players aim to combine to get 2048.
+ * @memberof Game2048
+ * @typedef {(0 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | )} tiles
+ */
+
+/**
+ * Create a new empty board.
+ * Optionally with a specified width,
+ * otherwise returns a standard 4 x 4 board.
+ * @memberof Game2048
+ * @function
+ * @param {number} [width = 4] The width of the new board.
+ * @returns {Game2048.Board} An empty board for starting a game.
+ */
+Game2048.empty_board = function (width = 4) {
+    return R.repeat(R.repeat(0, width), width);
+};
+
+
+
+/**
+ * create new array of all nums != 0
+ * @memberof Game2048
+ * @function
+ * @param {row[]} row a row from the board.
+ * @returns {Game2048.RowNoZero}
+ */
+Game2048.filterZero = function (row){
+    return row.filter(num => num != 0); //Will the be a inpure function??
+};
+
+
+/**
+ * Create a new array with 0 add to all empty space in an array
+ * @memberof Game2048
+ * @function
+ * @param {row[]} row a row from the board.
+ * @returns {Game2048.RowPushZero}
+ */
+ Game2048.addZero = function (row){
+    while (row.length &lt; columns) {
+        row.push(0);
+    }
+    return x;
+};
+
+
+
+/**
+ * combine same numbers in a row
+ * @memberof Game2048
+ * @function
+ * @param {row[]} row a row from the board.
+ * @returns {Game2048.RowCombined}
+ */
+ Game2048.combineNum = function (row){
+    for (let i = 0; i &lt; row.length-1; i++){
+        if (row[i] == row[i+1]) {
+            row[i] *= 2;
+            row[i+1] = 0;
+            score += row[i];
+        }
+    }
+    return row;
+ }
+
+
+ /**
+ * check if there is empty (0) tile
+ * @memberof Game2048
+ * @function
+ * @param {Game2048.Board[][]} board the game board.
+ * @returns {boolean}
+ */
+Game2048.hasEmpty = function (board){
+    let count = 0;
+    for (let r = 0; r &lt; rows; r++) {
+        for (let c = 0; c &lt; columns; c++) {
+            if (board[r][c] == 0) { //at least one zero in the board
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+ /**
+ * create a new "2" tile
+ * @memberof Game2048
+ * @function
+ * @param {Game2048.Board[][]} board the game board.
+ * @returns {Game2048.Board[][]}
+ */
+Game2048.createTwo = function (board){
+    if (! hasEmpty()) {
+        return;
+    }
+    let found = false;
+    while (!found) {
+        //find random row and column to place a 2 in
+        let r = Math.floor(Math.random() * rows);
+        let c = Math.floor(Math.random() * columns);
+        if (board[r][c] == 0) {
+            board[r][c] = 2;
+            found = true;
+        }
+    }
+}
+
+ /**
+ * slide to the left
+ * @memberof Game2048
+ * @function
+ * @param {Game2048.Board[][]} board the game board.
+ * @returns {Game2048.Board[][]}
+ */
+  Game2048.slideLeft = function (board){
+    for (let r = 0; r &lt; rows; r++) {
+        let row = board[r];
+        row = slide(row);
+        board[r] = row;
+    }
+} 
+
+
+
+board.forEach(tile => {
+    forEach
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Wed Jun 01 2022 15:33:59 GMT+0100 (英国夏令时间) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

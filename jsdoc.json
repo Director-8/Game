@@ -4,7 +4,7 @@
     },
     "source": {
         "include": [
-            "web-app/common/Puzzle.js",
+            "web-app/common/Game2048.js",
             "web-app/server/Stats4.js"
         ],
         "includePattern": "\\.js$",
