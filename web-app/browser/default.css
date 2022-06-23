@@ -47,9 +47,9 @@ hr
 {
     width: var(--tile-width);
     height: var(--tile-height);
-    border: var(--tile-border) solid #bbada0;
+    border: 6px solid #bbada0;
 
-    font-size: calc(0.4*var(--tile-width));
+    font-size: 230%;
     font-weight: bold;
     display: flex;
     justify-content: center;
@@ -58,37 +58,26 @@ hr
 
 #result_dialog
 {
-    background: none;
+    background: orange;
     border: none;
     color: black;
-    height: 100%;
-    width: 100%;
-    position: relative;
-    text-align: center;
+    height: 30%;
+    width: 30%;
+    position: absolute;
+    text-align: center;   
 }
 
 
-#result_dialog h2
-{
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 100pt;
-    margin: 0;
-    margin-top: 300pt;
-}
-
-#result_win
+#result_message
 {
     font-size: 24pt;
     font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     line-height: 2;
 }
 
-#result_loss
-{
-    font-size: 24pt;
-    font-weight: bold;
-    line-height: 2;
-}
 
 
 footer a

@@ -1,4 +1,5 @@
 import R from "./ramda.js";
+
 /**
  * 2048.js is a module to model and play "2048".
  * https://en.wikipedia.org/wiki/2048_(video_game)
@@ -6,248 +7,266 @@ import R from "./ramda.js";
  * @author QY.Alexis Yang
  * @version 2021/22
  */
-const Game2048 = Object.create(null);
+ const Game2048 = Object.create(null);
 
-/**
- * A PlayBoard is an square grid that tiles of different value is placed.
- * tilles fill up empty positions and can be slide and combined between each other.
- * It is implemented as an array of rows of tiles.
- * @memberof Game2048
- * @typedef {Game2048.Piece-or-Empty[][]} PlayBoard
- */
-
-/**
- * A tile is a coloured section of a with value that players aim to combine to get 2048.
- * @memberof Game2048
- * @typedef {(0 | 2n )} tiles
- */
-
-/**
- * Create a new empty board.
- * Optionally with a specified width,
- * otherwise returns a standard 4 x 4 board.
+ /**
+  * A PlayBoard is an square grid that tiles of different value is placed.
+  * tilles fill up empty positions and can be slide and combined between each other.
+  * It is implemented as an array of rows of tiles.
+  * @memberof Game2048
+  * @typedef {Game2048.Piece-or-Empty[][]} PlayBoard
+  */
+ 
+ /**
+  * A tile is a coloured section of a with value that players aim to combine to get 2048.
+  * @memberof Game2048
+  * @typedef {(0 | 2n )} tiles
+  */
+ 
+ /**
+  * Create a new empty board.
+  * Optionally with a specified width,
+  * otherwise returns a standard 4 x 4 board.
+  * @memberof Game2048
+  * @function
+  * @param {number} [width = 4] The width of the new board.
+  * @returns {Game2048.Board} An empty board for starting a game.
+  */
+ Game2048.empty_board = function (width = 4) {
+     return R.repeat(R.repeat(0, width), width);
+ };
+ 
+ 
+ /**
+ * to slide a row
  * @memberof Game2048
  * @function
- * @param {number} [width = 4] The width of the new board.
- * @returns {Game2048.Board} An empty board for starting a game.
+ * @param {row[]} row the game board.
+ * @returns {Game2048.Board[][]}
  */
-Game2048.empty_board = function (width = 4) {
-    return R.repeat(R.repeat(0, width), width);
-};
 
-
-
-/**
- * create new array of all nums of the original array that != 0
- * @memberof Game2048
- * @function
- * @param {row[]} row a row from the board.
- * @returns {Game2048.RowNoZero}
- */
-Game2048.filterZero = function (row){
-    const newrow = [...row];
+const filterZero= function (row){
+    var newrow;
+    newrow=R.clone(row);
     return newrow.filter(num => num != 0);
 };
 
-
-/**
- * Create a new array with 0 add to all empty space in an array
- * @memberof Game2048
- * @function
- * @param {row[]} row a row from the board.
- * @returns {Game2048.RowPushZero}
- */
- Game2048.addZero = function (row){
-     const newrow = [...row];
+const addZero = function (row){
+    var newrow;
+    newrow=R.clone(row);
+    var columns = 4;
      while (newrow.length < columns) {
          newrow.push(0);
      }
      return newrow;
 };
 
-
-
-/**
- * combine same numbers in a row
- * @memberof Game2048
- * @function
- * @param {row[]} row a row from the board.
- * @returns {Game2048.RowCombined}
- */
- Game2048.combineNum = function (row){
-    const newrow = [...row];
-    newrow.forEach(i => {
-        if (newrow[i] == newrow[i+1]){
+const combineNum = function (row){
+    var newrow;
+    newrow=R.clone(row);
+    for (let i = 0; i < newrow.length-1; i++){
+        if (newrow[i] == newrow[i+1]) {
             newrow[i] *= 2;
             newrow[i+1] = 0;
-            score += newrow[i];
         }
-    });
+    }
+    return newrow;
+ };
+
+ Game2048.slide= function (row) {
+    var newrow;
+    newrow = R.clone(row);
+    newrow = filterZero(newrow); 
+    newrow = combineNum(newrow);
+    newrow = filterZero(newrow); 
+    newrow = addZero(newrow);
     return newrow;
  }
-
+ 
+ 
+  /**
+  * add a new "2" tile in the board
+  * @memberof Game2048
+  * @function
+  * @param {Game2048.Board[][]} board the game board.
+  * @param {number} c
+  * @param {number} r
+  * @returns {Game2048.Board[][]}
+  */
+ Game2048.addTwo = function(board,r,c){
+    var newboard;
+    newboard=R.clone(board);
+    if(newboard[r][c] == 0){
+        newboard[r][c] =2;
+    }
+    return newboard
+ }
+ 
+ 
+  /**
+  * check if there is empty (0) tile
+  * @memberof Game2048
+  * @function
+  * @param {Game2048.Board[][]} board the game board.
+  * @returns {boolean}
+  */
+ Game2048.hasEmpty = function (board){
+    var newboard;
+    newboard = R.clone(board);
+     return R.includes(0,R.flatten(newboard));
+ }
+ 
+  /**
+  * slide to the left
+  * @memberof Game2048
+  * @function
+  * @param {Game2048.Board[][]} board the game board.
+  * @returns {Game2048.Board[][]}
+  */
+   Game2048.slideLeft = function (board){
+       var newboard;
+       newboard = R.clone(board);
+       newboard.forEach(function(i, i_index){
+           newboard[i_index]=Game2048.slide(i);
+       })
+     return newboard
+ };
+ 
+ 
+  /**
+  * slide to the right
+  * @memberof Game2048
+  * @function
+  * @param {Game2048.Board[][]} board the game board.
+  * @returns {Game2048.Board[][]}
+  */
+ Game2048.slideRight = function(board) {
+     var newboard;
+     newboard = R.clone(board);
+     newboard.forEach(function(r, r_index){
+         r=r.reverse(); 
+         r=Game2048.slide(r);  
+         r=r.reverse();  
+         newboard[r_index]=r;
+     })
+     return newboard
+ }
+ 
+ 
+  /**
+  * slide tile in upwards direction
+  * @memberof Game2048
+  * @function
+  * @param {Game2048.Board[][]} board the game board.
+  * @returns {Game2048.Board[][]}
+  */
+ Game2048.slideUp = function(board) {
+     var newboard;
+     newboard = R.clone(board);
+     var columeboard;
+     columeboard=R.transpose(newboard);
+     columeboard=Game2048.slideLeft(columeboard);
+     newboard=R.transpose(columeboard);
+     return newboard
+ }
+ 
+  /**
+  * slide tile in downwards direction
+  * @memberof Game2048
+  * @function
+  * @param {Game2048.Board[][]} board the game board.
+  * @returns {Game2048.Board[][]}
+  */
+ Game2048.slideDown = function(board) {
+     var newboard;
+     newboard = R.clone(board);
+     var columeboard;
+     columeboard=R.transpose(newboard);
+     columeboard=Game2048.slideRight(columeboard);
+     newboard=R.transpose(columeboard);
+     return newboard
+ }
+ 
+ 
+  /**
+  * caculate the current score of the game.
+  * @memberof Game2048
+  * @function
+  * @param {Game2048.Board[][]} board the game board.
+  * @returns {Game2048.Board[][]}
+  */
+ Game2048.score = function(board){
+     var score=0;
+     board.forEach(function(r){
+         r.forEach(function(c){
+             score=score+c;
+         })
+     })
+     return score;
+ }
+ 
+  /**
+  * check is the game is end.
+  * @memberof Game2048
+  * @function
+  * @param {Game2048.Board[][]} board the game board.
+  * @returns {boolean}
+  */
+ Game2048.isEnd = function(board){
+     var flag = 1;
+     R.range(0,3).forEach(function(r){
+         R.range(0,3).forEach(function(c){
+             if(board[r][c] === board[r][c+1]){
+                 flag = 0;
+             }
+             else if (board[r][c] === board[r+1][c]){
+                 flag = 0;
+             }
+             else if (board[3][0] === board[3][1]){
+                 flag =0;
+             }
+             else if (board[3][1] === board[3][2]){
+                 flag =0;
+             }
+             else if (board[3][2] === board[3][3]){
+                 flag =0;
+             }
+             else if (board[0][3] === board[1][3]){
+                 flag =0;
+             }
+             else if (board[1][3] === board[2][3]){
+                 flag =0;
+             }
+             else if (board[2][3] === board[3][3]){
+                 flag =0;
+             }
+         })
+     })
+     if (flag === 0){
+         return false;
+     }
+     else if (flag ===1){
+         return true;
+     }
+ }
 
 /**
-* to slide a row
-* @memberof Game2048
-* @function
-* @param {row[]} row the game board.
-* @returns {Game2048.Board[][]}
-*/
-function slide(row) {
-   //[0, 2, 2, 2] 
-   const newrow = [...row];
-   newrow = filterZero(newrow); //[2, 2, 2]
-   newrow = combineNum(newrow);//[4, 0, 2]
-   newrow = filterZero(newrow); //[4, 2]
-   //add zeroes
-   while (newrow.length < columns) {
-       newrow.push(0);
-   } //[4, 2, 0, 0]
-   return newrow;
-}
-
-
- /**
- * add a new "2" tile in the board
- * @memberof Game2048
- * @function
- * @param {Game2048.Board[][], number} board the game board.
- * @returns {Game2048.Board[][]}
- */
-  Game2048.addTwo = function (board, r, c,){
-    newboard=[].concat(board);
-    return newboard[r][c]=2;
-}
-
-
-
- /**
- * check if there is empty (0) tile
- * @memberof Game2048
- * @function
- * @param {Game2048.Board[][]} board the game board.
- * @returns {boolean}
- */
-Game2048.hasEmpty = function (board){
-    let count = 0;
-    board.forEach(r => {
-        r.forEach(c =>{
-            if (board[r][c] == 0){  //at least one zero in the board
-                return true;
-            } 
+  * count for total number of 2048s when the game is end
+  * @memberof Game2048
+  * @function
+  * @param {Game2048.Board[][]} board the game board.
+  * @returns {number}
+  */
+ Game2048.endCount = function(board){
+    var count=0;
+    board.forEach(function(r){
+        r.forEach(function(c){
+            if (c >= 2048){
+                count = count+1
+            }
         })
     })
-    return false;
-}
-
- /**
- * slide to the left
- * @memberof Game2048
- * @function
- * @param {Game2048.Board[][]} board the game board.
- * @returns {Game2048.Board[][]}
- */
-  Game2048.slideLeft = function (board){
-    newboard=[].concat(board);
-    newboard.forEach(function(r){
-        let row = r;
-        row=slide(row);
-        r=row
-    })
-    return newboard
-};
-
-
- /**
- * slide to the right
- * @memberof Game2048
- * @function
- * @param {Game2048.Board[][]} board the game board.
- * @returns {Game2048.Board[][]}
- */
-Game2048.slideRight = function(board) {
-    newboard=[].concat(board);
-    newboard.forEach(function(r){
-        let row = r;   //[0, 2, 2, 2]
-        row.reverse();  //[2, 2, 2, 0]
-        row=slide(row);  //[4, 2, 0, 0]
-        r=row.reverse();  //[0, 0, 2, 4];
-    })
-    return newboard
-}
-
-
- /**
- * slide tile in upwards direction
- * @memberof Game2048
- * @function
- * @param {Game2048.Board[][]} board the game board.
- * @returns {Game2048.Board[][]}
- */
-Game2048.slideUp = function(board) {
-    newboard=[].concat(board);
-    newboard.forEach(function(c) {
-        c1=[]
-        c2=[]
-        c3=[]
-        c4=[]
-        c1.append(c[0])
-        let row = [newboard[0][c], newboard[1][c], newboard[2][c], newboard[3][c]];
-        row = slide(row);
-        // board[0][c] = row[0];
-        // board[1][c] = row[1];
-        // board[2][c] = row[2];
-        // board[3][c] = row[3];
-    })
-    return newboard
-}
-
-
-//  /**
-//  * slide tile in upwards direction
-//  * @memberof Game2048
-//  * @function
-//  * @param {Game2048.Board[][]} board the game board.
-//  * @returns {Game2048.Board[][]}
-//  */
-//   Game2048.slideUp = function(board) {
-//     newboard=[].concat(board);
-//     newboard.forEach(c => {
-//         let row = [newboard[0][c], newboard[1][c], newboard[2][c], newboard[3][c]];
-//         row = slide(row);
-//         // board[0][c] = row[0];
-//         // board[1][c] = row[1];
-//         // board[2][c] = row[2];
-//         // board[3][c] = row[3];
-//     })
-//     return newboard
-// }
-
-
- /**
- * slide tile in downwards direction
- * @memberof Game2048
- * @function
- * @param {Game2048.Board[][]} board the game board.
- * @returns {Game2048.Board[][]}
- */
-Game2048.slideDown = function(board) {
-    newboard=[].concat(board);
-    newboard.forEach(c => {
-        let row = [newboard[0][c], newboard[1][c], newboard[2][c], newboard[3][c]];
-        row.reverse();
-        row = slide(row);
-        row.reverse();
-        // board[0][c] = row[0];
-        // board[1][c] = row[1];
-        // board[2][c] = row[2];
-        // board[3][c] = row[3];
-    })
-    return newboard
-}
+    return count;
+ }
 
 export default Object.freeze(Game2048);
-
-
-
